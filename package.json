@@ -1,0 +1,23 @@
+{
+  "name": "oxls",
+  "version": "1.0.0",
+  "description": "language school",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kunle001/oxford.git"
+  },
+  "author": "OLanipekun Adekunle",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kunle001/oxford/issues"
+  },
+  "homepage": "https://github.com/kunle001/oxford#readme",
+  "dependencies": {
+    "path": "^0.12.7"
+  }
+}
