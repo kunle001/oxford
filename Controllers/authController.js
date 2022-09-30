@@ -27,6 +27,8 @@ const createSendToken= (user, statusCode, req, res)=>{
 };
 
 
+
+
 exports.login=catchAsync(async (req, res, next)=>{
     const {email, password} = req.body;
 
@@ -42,3 +44,12 @@ exports.login=catchAsync(async (req, res, next)=>{
     createSendToken(user, 200, req, res)
 
 }); 
+
+exports.signUp = catchAsync(async (req, res, next)=>{
+        
+    const user= await User.create(req.body);
+    const url= '127.0.0.1:3000'
+    await new Email(user, url).sendWelcome()
+    createSendToken(user, 201, req, res)
+    
+});
