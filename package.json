@@ -18,6 +18,10 @@
   },
   "homepage": "https://github.com/kunle001/oxford#readme",
   "dependencies": {
+    "bcrypt": "^5.0.1",
+    "body": "^5.1.0",
+    "body-parser": "^1.20.0",
+    "parser": "^0.1.4",
     "path": "^0.12.7"
   }
 }
