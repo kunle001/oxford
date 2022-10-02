@@ -14,5 +14,6 @@ mongoose.connect(DB, {
 }).then(()=> console.log('DB connected succesfully'));
 
 const server= app.listen(5000, ()=>{
+    console.log(process.env.MODE)
     console.log('Runnning on port 5000...')
 })

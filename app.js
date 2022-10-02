@@ -2,6 +2,7 @@ const express = require('express');
 const path= require('path')
 const bodyParser= require('body-parser')
 const userRouter= require('./Routes/userRoutes')
+const cookieParser= require('cookie-parser')
 
 //ERROR HANDLER
 const AppError= require('./utils/appError')
@@ -15,11 +16,21 @@ app.use((req, res, next)=>{
     next();
 });
 app.use(bodyParser.json());
+app.use(cookieParser());
+//SETTING UP PUG
+
+app.engine('pug', require('pug').__express)
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'))
+
+//Serving static files
+app.use(express.static(path.join(__dirname, 'html')));
+
 
 app.use('/api/v1/users', userRouter)
 
 app.all('*',(req, res, next)=>{
-    next (new AppError(`Page ${req.origianlUrl} is not found`, 404))
+    next (new AppError(`Page ${req.origianlUrl} is not found`, 404 ))
 })
 
 app.use(globalError)
