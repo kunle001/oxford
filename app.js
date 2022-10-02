@@ -1,8 +1,8 @@
 const express = require('express');
-const path= require('path')
 const bodyParser= require('body-parser')
 const userRouter= require('./Routes/userRoutes')
 const cookieParser= require('cookie-parser')
+const path= require('path')
 
 //ERROR HANDLER
 const AppError= require('./utils/appError')
@@ -18,6 +18,8 @@ app.use((req, res, next)=>{
 app.use(bodyParser.json());
 app.use(cookieParser());
 //SETTING UP PUG
+app.use(express.static(path.join(__dirname, 'public')));
+
 
 app.engine('pug', require('pug').__express)
 app.set('view engine', 'pug');
