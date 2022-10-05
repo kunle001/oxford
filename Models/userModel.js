@@ -11,7 +11,8 @@ userSchema= new mongoose.Schema({
     email:{
         type: String, 
         required: [true, 'provide a valid email'],
-        unique: [true, 'there is a registered user with this mail']
+        unique: [true, 'there is a registered user with this mail'],
+        lowercase:true
     } ,
     photo: {
         type: String,

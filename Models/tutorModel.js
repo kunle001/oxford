@@ -1,5 +1,7 @@
 const mongoose= require('mongoose')
 const validator= require('validator')
+const bcrypt= require('bcrypt')
+const crypto= require('crypto')
 
 
 tutorSchema= new mongoose.Schema({
@@ -30,10 +32,10 @@ tutorSchema= new mongoose.Schema({
         type: String, 
         required: [true, 'provide your facbook account']
     }, 
-    language: {
+    language: [{
         type: String, 
         required: [true, 'what language do you tutor']
-    }, 
+    }], 
     experience: {
         type: Number, 
         required: [true, 'how many years of experience do you have ']
@@ -41,7 +43,6 @@ tutorSchema= new mongoose.Schema({
     ratingsAverage: {
         type: Number,
         default: 0,
-        min: [1, 'Rating must be above 1.0'],
         max: [5, 'Rating must be below 5.0'],
         set: val => Math.round(val * 10) / 10 // 4.666666, 46.6666, 47, 4.7
       },
@@ -54,6 +55,10 @@ tutorSchema= new mongoose.Schema({
         required: [true, 'plesae provide a bio statement'],
         trim: true
     },
+    courses: [{
+        type: mongoose.Schema.ObjectId, 
+        ref: 'courses'
+    }],
     role: String,
     password: {
         type: String,
@@ -69,11 +74,22 @@ tutorSchema= new mongoose.Schema({
             message: "confirm your password again"
         }
     },
+    bookedDays:[{
+        type: Date
+    }],
     passwordResetToken: {type:String, select: false},
     passwordResetExpires: {type:Date, select:false}
-});
+},
+{
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+  });
 
 
+
+// tutorSchema.pre('find', function(next){
+//     this.bookedDays[0]= Class.date
+// })
 
 tutorSchema.pre('save', async function(next){
     this.role= 'tutor'

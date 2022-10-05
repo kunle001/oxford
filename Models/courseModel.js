@@ -1,0 +1,68 @@
+const mongoose= require('mongoose')
+const slugify = require('slugify')
+
+const courseSchema= new mongoose.Schema({
+    name:{
+        type: String,
+        required: [true, 'what is the course name'],
+        trim: true,
+        unique: true
+    },
+    price: {
+        type: Number, 
+        required: [true, 'what is the price of this course']
+    }, 
+    discountPrice: Number,
+    description: {
+        type: String,
+        required: [true, 'description!!']
+    },
+    ratingsAverage: {
+        type: Number,
+        default: 0,
+        max: [5, 'Rating must be below 5.0'],
+        set: val => Math.round(val * 10) / 10 // 4.666666, 46.6666, 47, 4.7
+      },
+    ratingsQuantity: {
+        type: Number,
+        default: 0
+      },
+      slug: String
+},
+{ toJSON: { virtuals: true }, toObject: { virtuals: true }});
+
+
+// Virtual populate
+courseSchema.virtual('students', {
+    ref: 'User',
+    foreignField: 'courses',
+    localField: '_id'
+  });
+
+courseSchema.virtual('tutors', {
+    ref: 'Tutor',
+    foreignField: 'courses',
+    localField: '_id'
+})
+ 
+//----
+courseSchema.pre(/^find/, function(next) {
+    this.populate({
+      path: 'tutors',
+      select: 'name email photo instagram twitter facebook -courses'
+    }).populate({
+      path: 'students',
+      select: '-__v -passwordChangedAt'
+    });
+  
+    next();
+  });
+
+courseSchema.pre('save', function(next){
+    this.slug = slugify(this.name, { lower: true });
+    next()
+});
+
+const Course= mongoose.model('Course', courseSchema)
+
+module.exports= Course

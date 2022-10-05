@@ -69,3 +69,5 @@ exports.updateProfile= catchAsync(async(req, res, next)=>{
 });
 
 
+exports.getAllUsers= catchAsync
+
