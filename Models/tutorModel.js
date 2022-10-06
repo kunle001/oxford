@@ -57,7 +57,7 @@ tutorSchema= new mongoose.Schema({
     },
     courses: [{
         type: mongoose.Schema.ObjectId, 
-        ref: 'courses'
+        ref: 'Course'
     }],
     role: String,
     password: {
@@ -86,10 +86,20 @@ tutorSchema= new mongoose.Schema({
   });
 
 
+tutorSchema.virtual('classes', {
+    ref: 'Class',
+    foreignField: 'tutor',
+    localField: '_id'
+});
 
-// tutorSchema.pre('find', function(next){
-//     this.bookedDays[0]= Class.date
-// })
+tutorSchema.pre(/^find/, function(next){
+    this.populate({
+        path: 'classes',
+        select: 'students course sheduledDay TimeBooked -tutor'
+    })
+    next();
+})
+
 
 tutorSchema.pre('save', async function(next){
     this.role= 'tutor'
