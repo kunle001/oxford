@@ -69,21 +69,6 @@ exports.signUp = async (req, res, next)=>{
     
 };
 
-exports.signUp = async (req, res, next)=>{
-    try{
-        const user= await User.create(req.body);
-        const url= '127.0.0.1:3000'
-        await new Email(user, url).sendWelcome()
-        createSendToken(user, 201, req, res)
-
-    }catch(err){
-        console.log(err)
-        res.status(500).json({
-            errorMessage: err
-        })
-    }
-    
-};
 
 exports.signUpTutor = async (req, res, next)=>{
     try{
