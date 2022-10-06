@@ -11,7 +11,8 @@ const mongoose= require('mongoose')
 
 // agenda.processEvery('')
 
-const date= new Date()
+var date= new Date
+var dateOfMlSec= date.getTime()
 
 const clasSchema= new mongoose.Schema({
     students: [{
@@ -27,13 +28,22 @@ const clasSchema= new mongoose.Schema({
         ref: 'Tutor'
     }, 
 
-    Day:{
+    sheduledDay:{
         type: String,
         default: `${date.getDate()+3}/${date.getMonth()+1}/${date.getFullYear()}`
     },
+
+    scheduledTime:{
+        type: Date,
+        default: date.setDate(date.getDate()+2)
+    },
+    deadLine:{
+        type: Date,
+        default: date.setDate(date.getDate()+2)
+    },
     TimeBooked:{
         type: Date,
-        default: date.getTime()
+        default: Date.now()
     },
     price:{
         type: Number,
@@ -45,8 +55,20 @@ const clasSchema= new mongoose.Schema({
     }
 });
 
-clasSchema.index({ tutor: 1, student: 1 }, { unique: true });
+clasSchema.index({ tutor: 1, student: 1}, { unique: true });
 
+clasSchema.pre(/^find/, function(next){
+    this.populate({
+        path: 'students',
+        select: 'name email'
+    });
+
+    if (this.deadLine>Date.now){
+        this.delete;
+        next();
+    }
+    next();
+});
 
 const Class= mongoose.model('Class', clasSchema)
 
