@@ -2,7 +2,7 @@ const Tutor= require('../Models/tutorModel')
 const catchAsync= require('../utils/catchAsync')
 
 exports.findOneTutor= catchAsync(async(req, res, next)=>{
-    const tutor= await Tutor.findById(req.params.tutorId).populate('courses')
+    const tutor= await Tutor.findById(req.params.tutorId)
 
     res.status(200).json({
         status: 'success',
