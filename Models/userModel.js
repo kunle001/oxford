@@ -28,7 +28,8 @@ userSchema= new mongoose.Schema({
     }], 
     password: {
         type: String,
-        required: true
+        required: true,
+        select: false
     }, 
     confirmPassword: {
         type: String, 
@@ -44,6 +45,20 @@ userSchema= new mongoose.Schema({
     passwordResetExpires: {type:Date, select:false}
 });
 
+userSchema.virtual('classes', {
+    ref: 'Class',
+    foreignField: 'students',
+    localField: '_id'
+});
+
+userSchema.pre(/^find/, function(next){
+    this.populate({
+        path: 'classes',
+        select: 'name'
+    });
+    next();
+})
+
 userSchema.pre('save', async function(next){
     if(!this.isModified('password')) return next();
 
@@ -52,6 +67,7 @@ userSchema.pre('save', async function(next){
     this.confirmPassword= undefined;
     next();    
 });
+
 
 userSchema.methods.correctPassword =  async function(
     candidatePassword,

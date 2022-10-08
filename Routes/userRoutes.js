@@ -15,4 +15,6 @@ router.route('/update-me').post(
     userController.resizeUserPhoto,
     userController.updateProfile)
 
+router.route('/').get(userController.getAllUsers)
+
 module.exports= router
