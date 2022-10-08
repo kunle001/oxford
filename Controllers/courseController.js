@@ -29,3 +29,27 @@ exports.getOneCourse= catchAsync(async(req, res, next)=>{
     })
 });
 
+exports.getCourseStats= catchAsync(async(req, res, next)=>{
+    const stats= await Course.aggregate([
+        {
+            $match: { ratingsAverage:{$gte:0}}
+        },
+        {
+            $group: {
+                _id: null,
+                numCourse: {$sum: 1},
+                numRatings: {$sum: '$ratingsQuantity'},
+                avgRating: {$avg: '$ratingsAverage'},
+                avgPrice: {$avg: '$price'},
+                minPrice: {$min: '$price'},
+                maxPrice: {$max: '$price'}
+
+            }
+        }
+    ]);
+
+    res.status(200).json({
+        status: 'success',
+        data: stats
+    })
+});

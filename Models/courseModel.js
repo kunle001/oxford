@@ -6,7 +6,11 @@ const courseSchema= new mongoose.Schema({
         type: String,
         required: [true, 'what is the course name'],
         trim: true,
-        unique: true
+    },
+    level:{
+      type: String,
+      enum: ['advanced', 'intermediate', 'beginer'],
+      required: ['true', 'what level of learning is this course']
     },
     price: {
         type: Number, 
@@ -31,7 +35,7 @@ const courseSchema= new mongoose.Schema({
 },
 { toJSON: { virtuals: true }, toObject: { virtuals: true }});
 
-
+courseSchema.index({name: 1, level:1}, {unique: true})
 // Virtual populate
 courseSchema.virtual('students', {
     ref: 'User',
