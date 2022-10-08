@@ -52,23 +52,40 @@ const clasSchema= new mongoose.Schema({
     paid:{
         type: Boolean, 
         default: false
+    },
+    classLink:{
+        type: String,
+        default: 'not yet updated'
     }
 });
 
 clasSchema.index({ tutor: 1, student: 1}, { unique: true });
 
-clasSchema.pre(/^find/, function(next){
+clasSchema.pre(/^findOne/, function(next){
     this.populate({
         path: 'students',
         select: 'name email'
+    }).populate({
+        path: 'course',
+        select: 'name level'
     });
 
-    if (this.deadLine>Date.now){
+    if (this.deadLine>Date.now()){
         this.delete;
-        next();
     }
     next();
 });
+
+// clasSchema.pre(/^findOneAndUpdate/, function(req, next){
+//     console.log(req)
+//     if (this.schema.tree.students.length>0){
+//         if(!this.schema.tree.students.includes(req.user.id)) this.schema.tree.students.push(req.user.id)
+//         next();
+//     };
+//     next()
+// })
+
+
 
 const Class= mongoose.model('Class', clasSchema)
 
