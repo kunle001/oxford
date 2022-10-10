@@ -31,6 +31,10 @@ const courseSchema= new mongoose.Schema({
         type: Number,
         default: 0
       },
+      tutors:[{
+        type: mongoose.Schema.ObjectId,
+        ref: 'Tutor'
+      }],
       slug: String
 },
 { toJSON: { virtuals: true }, toObject: { virtuals: true }});
@@ -42,18 +46,11 @@ courseSchema.virtual('students', {
     foreignField: 'courses',
     localField: '_id'
   });
-
-courseSchema.virtual('tutors', {
-    ref: 'Tutor',
-    foreignField: 'courses',
-    localField: '_id'
-})
- 
 //----
 courseSchema.pre(/^find/, function(next) {
     this.populate({
       path: 'tutors',
-      select: 'name email photo instagram twitter facebook -courses'
+      select: 'name email photo instagram twitter facebook'
     }).populate({
       path: 'students',
       select: '-__v -passwordChangedAt'

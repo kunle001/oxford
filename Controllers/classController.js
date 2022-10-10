@@ -7,16 +7,9 @@ const Email= require('../utils/email')
 
 
 exports.createClass= catchAsync(async(req, res, next)=>{
-    const course= await Course.findOne({
-        id: req.params.courseId,
-        tutors: {elemMatch:{
-            _id: req.params.tutorId
-        }}
-        
-    });
-    
+    const course= await Course.findById(req.params.courseId);
 
-    if (!course){
+    if (!course.tutors.includes(req.params.tutorId)){
         return next(new AppError('no course with this Id and tutor', 404))
     }
     console.log(req.user.id)
@@ -48,7 +41,7 @@ exports.registerClass= catchAsync(async(req, res, next)=>{
 })
 
 exports.getAll= catchAsync(async(req, res, next)=>{
-    const tutorials= await Class.find();
+    const tutorials= await Class.find().populate('students');
 
     res.status(200).json({
         status: 'success',

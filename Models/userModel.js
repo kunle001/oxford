@@ -23,9 +23,6 @@ userSchema= new mongoose.Schema({
         enum: ['user', 'student','tutor', 'admin'], 
         default: 'user'
     },
-    courses: [{
-        type: String
-    }], 
     password: {
         type: String,
         required: true,
@@ -41,6 +38,10 @@ userSchema= new mongoose.Schema({
             message: "confirm your password again"
         }
     },
+    tutors: [{
+        type: mongoose.Schema.ObjectId,
+        ref: 'Tutor'
+    }],
     passwordResetToken: {type:String, select: false},
     passwordResetExpires: {type:Date, select:false}
 });
@@ -51,11 +52,12 @@ userSchema.virtual('classes', {
     localField: '_id'
 });
 
+
 userSchema.pre(/^find/, function(next){
     this.populate({
         path: 'classes',
         select: 'name'
-    });
+    })
     next();
 })
 

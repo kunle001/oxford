@@ -1,4 +1,5 @@
-const mongoose= require('mongoose')
+const mongoose= require('mongoose');
+const User = require('./userModel');
 // const Agenda= require('agenda')
 
 
@@ -12,7 +13,8 @@ const mongoose= require('mongoose')
 // agenda.processEvery('')
 
 var date= new Date
-var dateOfMlSec= date.getTime()
+
+var dl= new Date
 
 const clasSchema= new mongoose.Schema({
     students: [{
@@ -39,7 +41,7 @@ const clasSchema= new mongoose.Schema({
     },
     deadLine:{
         type: Date,
-        default: date.setDate(date.getDate()+2)
+        default: dl.setMinutes(dl.getMinutes()+ 1)
     },
     TimeBooked:{
         type: Date,
@@ -60,33 +62,11 @@ const clasSchema= new mongoose.Schema({
 });
 
 clasSchema.index({ tutor: 1, student: 1}, { unique: true });
+clasSchema.index({"lastModifiedDate": 1}, {expireAfterSeconds: 5});
 
-clasSchema.pre(/^findOne/, function(next){
-    this.populate({
-        path: 'students',
-        select: 'name email'
-    }).populate({
-        path: 'course',
-        select: 'name level'
-    });
+clasSchema.post('save', async function(){
+    await User.findByIdAndUpdate(this.students[0],{$addToSet: {tutors:this.tutor}},{new: true});
+})
 
-    if (this.deadLine>Date.now()){
-        this.delete;
-    }
-    next();
-});
-
-// clasSchema.pre(/^findOneAndUpdate/, function(req, next){
-//     console.log(req)
-//     if (this.schema.tree.students.length>0){
-//         if(!this.schema.tree.students.includes(req.user.id)) this.schema.tree.students.push(req.user.id)
-//         next();
-//     };
-//     next()
-// })
-
-
-
-const Class= mongoose.model('Class', clasSchema)
-
+const Class= mongoose.model('Class', clasSchema);
 module.exports= Class

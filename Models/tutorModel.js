@@ -2,6 +2,7 @@ const mongoose= require('mongoose')
 const validator= require('validator')
 const bcrypt= require('bcrypt')
 const crypto= require('crypto')
+const Course= require('./courseModel')
 
 
 tutorSchema= new mongoose.Schema({
@@ -92,6 +93,12 @@ tutorSchema.virtual('classes', {
     localField: '_id'
 });
 
+tutorSchema.virtual('students', {
+    ref: 'User',
+    foreignField: 'tutors',
+    localField: '_id'
+})
+
 tutorSchema.pre(/^find/, function(next){
     this.populate({
         path: 'classes',
@@ -146,6 +153,10 @@ tutorSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
 
     return resetToken;
     };
+tutorSchema.post('save', async function(){
+    const cus= await Course.findByIdAndUpdate(this.courses[0],{$addToSet: {tutors:this.id}},{new: true});
+    console.log(cus)
+})
 
 const Tutor= mongoose.model('Tutor', tutorSchema)
 

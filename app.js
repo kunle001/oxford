@@ -6,6 +6,8 @@ const path= require('path')
 const tutorRouter= require('./Routes/tutorRoute')
 const classRouter= require('./Routes/classRoute')
 const courseRouter= require('./Routes/courseRoute')
+const reviewRouter= require('./Routes/reviewRoute')
+
 
 //ERROR HANDLER
 const AppError= require('./utils/appError')
@@ -35,7 +37,8 @@ app.use(express.static(path.join(__dirname, 'html')));
 app.use('/api/v1/users', userRouter)
 app.use('/api/v1/tutors', tutorRouter)
 app.use('/api/v1/class', classRouter)
-app.use('/api/v1/course', courseRouter)
+app.use('/api/v1/course', courseRouter);
+app.use('api/v1/reviews', reviewRouter)
 
 app.all('*',(req, res, next)=>{
     next (new AppError(`Page ${req.originalUrl} is not found`, 404 ))
