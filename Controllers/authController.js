@@ -41,11 +41,18 @@ exports.login=catchAsync(async (req, res, next)=>{
     }
 
     const user= await User.findOne({email}).select('+password');
-    if (!user || !(await user.correctPassword(password, user.password))){
+    const tutor= await Tutor.findOne({email}).select('+password')
+
+    if (user && (await user.correctPassword(password, user.password))){
+        createSendToken(user, 200, req, res)
+    }else if(tutor && (await tutor.correctPassword(password, tutor.password))){
+        //Logging in tutor
+        createSendToken(tutor, 200, req, res)
+    }else{
         return next(new AppError('Wrong username or password', 400))
     }
 
-    createSendToken(user, 200, req, res)
+    // createSendToken(user, 200, req, res)
 
 }); 
 const date= new Date()
@@ -53,8 +60,6 @@ const date= new Date()
 
 exports.signUp = async (req, res, next)=>{
     try{
-
-
         const user= await User.create(req.body);
         const url= '127.0.0.1:3000'
         await new Email(user, url).sendWelcome()
@@ -187,5 +192,23 @@ exports.protect= catchAsync(async (req, res, next)=>{
     next(new AppError('user is not logged in', 400))
 
 });
+
+
+exports.RestrictTo = (...roles) => {
+
+    return (req, res, next) => {
+        // const user= User.findById(req.params)
+        const role= req.user.role
+      // roles ['admin', 'lead-guide']. role='user'
+      if (!roles.includes(role)) {
+        res.status(403).send({
+            message: `User with your role: ${role} cannot access this page \n this page is Highly restricted`
+        })
+      }
+  
+      next();
+    };
+  };
+
 
 
