@@ -14,6 +14,9 @@ router.route('/update-me').post(
     userController.uploadUserPhoto,
     userController.resizeUserPhoto,
     userController.updateProfile)
+router.route('/my-profile').get(authController.protect, userController.profile)
+
+router.route('/resetPassword/:token').post(authController.resetPassword);
 
 router.route('/').get(userController.getAllUsers)
 

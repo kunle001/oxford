@@ -3,6 +3,7 @@ const AppError = require('../utils/appError')
 const catchAsync= require('../utils/catchAsync')
 const multer= require('multer')
 const sharp= require('sharp')
+const Tutor = require('../Models/tutorModel')
 
 const multerStorage = multer.memoryStorage();
 
@@ -76,5 +77,16 @@ exports.getAllUsers= catchAsync(async(req, res, next)=>{
     status: 'success',
     data: users
   })
-})
+});
+
+exports.profile= catchAsync(async(req, res, next)=>{
+  const user= await User.findById(req.user.id);
+  const tutor= await Tutor.findById(req.user.id)
+
+  res.status(200).json({
+    status: 'success',
+    data: user ||tutor
+  })
+});
+
 
