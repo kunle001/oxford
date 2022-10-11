@@ -94,37 +94,73 @@ exports.signUpTutor = async (req, res, next)=>{
 exports.forgotPassword = catchAsync(async (req, res, next) => {
     // 1) Get user based on POSTed email
     const user = await User.findOne({ email: req.body.email });
+    const tutor= await Tutor.findOne({email: req.body.email })
     
-    if (!user) {
+    if (!user && !tutor) {
       return next(new AppError('There is no user with email address.', 404));
     }
   
-    // 2) Generate the random reset token
-    const resetToken = user.createPasswordResetToken();
-    await user.save({ validateBeforeSave: false });
+
   
     // 3) Send it to user's email
-    try {
-      const resetURL = `${req.protocol}://${req.get(
-        'host'
-      )}/api/v1/users/resetPassword/${resetToken}`;
-      await new Email(user, resetURL).sendPasswordReset();
-  
-      res.status(200).json({
-        status: 'success',
-        message: 'Token sent to email!'
-      });
-    } catch (err) {
-      user.passwordResetToken = undefined;
-      user.passwordResetExpires = undefined;
-      await user.save({ validateBeforeSave: false });
-      console.log(err)
-  
-      return next(
-        new AppError('There was an error sending the email. Try again later!'),
-        400
-      );
+    if (user){
+        
+        try {
+            // 2) Generate the random reset token
+            const resetToken = user.createPasswordResetToken();
+            await user.save({ validateBeforeSave: false });
+
+            /////
+            const resetURL = `${req.protocol}://${req.get(
+              'host'
+            )}/api/v1/users/resetPassword/${resetToken}`;
+            await new Email(user, resetURL).sendPasswordReset();
+        
+            res.status(200).json({
+              status: 'success',
+              message: 'Token sent to email!'
+            });
+          } catch (err) {
+            user.passwordResetToken = undefined;
+            user.passwordResetExpires = undefined;
+            await user.save({ validateBeforeSave: false });
+            console.log(err)
+        
+            return next(
+              new AppError('There was an error sending the email. Try again later!'),
+              400
+            );
+          }
+
+    }else{
+        try {
+            // 2) Generate the random reset token
+            const resetToken = tutor.createPasswordResetToken();
+            await tutor.save({ validateBeforeSave: false });
+
+            ////
+            const resetURL = `${req.protocol}://${req.get(
+              'host'
+            )}/api/v1/users/resetPassword/${resetToken}`;
+            await new Email(tutor, resetURL).sendPasswordReset();
+        
+            res.status(200).json({
+              status: 'success',
+              message: 'Token sent to email!'
+            });
+          } catch (err) {
+            tutor.passwordResetToken = undefined;
+            tutor.passwordResetExpires = undefined;
+            await tutor.save({ validateBeforeSave: false });
+            console.log(err)
+        
+            return next(
+              new AppError('There was an error sending the email. Try again later!'),
+              400
+            );
+          }
     }
+
   });
 
 
@@ -136,24 +172,42 @@ exports.resetPassword= catchAsync(async (req, res, next)=>{
         passwordResetToken: hashedToken,
         passwordResetExpires: { $gt: Date.now() }
       });
+    
+    const tutor = await Tutor.findOne({
+        passwordResetToken: hashedToken,
+        passwordResetExpires: { $gt: Date.now() }
+      });
 
 
-    if(!user){
+    if(user){
+        user.passwordResetExpires= undefined;
+        user.passwordResetToken= undefined;
+        user.password= req.body.password;
+        user.confirmPassword= req.body.confirmPassword;
+        user.passwordChangedAt= Date.now()
+        await user.save();
+    
+        new Email(user,'127.0.0.1:3000').sendPasswordChanged()
+    
+        createSendToken(user, 200, req, res)
+    }else if (tutor){
+        tutor.passwordResetExpires= undefined;
+        tutor.passwordResetToken= undefined;
+        tutor.password= req.body.password;
+        tutor.confirmPassword= req.body.confirmPassword;
+        tutor.passwordChangedAt= Date.now()
+        await tutor.save();
+    
+        new Email(tutor,'127.0.0.1:3000').sendPasswordChanged()
+    
+        createSendToken(tutor, 200, req, res)
+    }else{
         res.status(404).json({
             message: "This password reset token is expired or wrong"
         })
     }
 
-    user.passwordResetExpires= undefined;
-    user.passwordResetToken= undefined;
-    user.password= req.body.password;
-    user.confirmPassword= req.body.confirmPassword;
-    user.passwordChangedAt= Date.now()
-    await user.save();
 
-    new Email(user,'127.0.0.1:3000').sendPasswordChanged()
-
-    createSendToken(user, 200, req, res)
 
 });
 
@@ -169,21 +223,26 @@ exports.protect= catchAsync(async (req, res, next)=>{
 
             // check if user still exists
             const currentUser= await User.findById(decoded.id);  
+            const currentTutor= await Tutor.findById(decoded.id)
+            // console.log(currentTutor)
 
-            if(!currentUser){
+            if(!currentUser && !currentTutor){
                 return (next(new AppError('Login again', 404)))
             };
 
             //check if user changed password after the token was issued
-
-            if(currentUser.changedPasswordAfter(decoded.iat)){
+            if(currentUser){
+                if(!currentUser.changedPasswordAfter(decoded.iat)){
+                    req.user= currentUser
+                    res.locals.user= currentUser
+                }
+            }else if(!currentTutor.changedPasswordAfter(decoded.iat)){
+                req.user= currentTutor
+                res.locals.user= currentTutor
+                console.log(req.user)
+            }else{
                 return (next(new AppError('password has been changed please login again', 400)))
             }
-
-            //if all these are coditions are met then there is a logged in user, therfore store user info in locals
-            req.user= currentUser
-            res.locals.user= currentUser
-
 
             //Allow next middleware
             return next();
