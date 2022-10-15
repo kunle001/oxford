@@ -1,5 +1,6 @@
 const Tutor= require('../Models/tutorModel')
 const catchAsync= require('../utils/catchAsync')
+const Course= require('../Models/courseModel')
 
 exports.findOneTutor= catchAsync(async(req, res, next)=>{
     const tutor= await Tutor.findById(req.params.tutorId)
@@ -26,13 +27,16 @@ exports.updateProfile= catchAsync(async(req, res, next)=>{
   
     // 2) Filtered out unwanted fields names that are not allowed to be updated
     const filteredBody = filterObj(req.body, 'name', 'email');
-    if (req.file) filteredBody.photo = req.file.filename;
+    if (req.file) req.body.photo = req.file.filename;
   
     // 3) Update user document
-    const updatedTutor = await Tutor.findByIdAndUpdate(req.user.id, filteredBody, {
+    const updatedTutor = await Tutor.findByIdAndUpdate(req.user.id, req.body, {
       new: true,
       runValidators: true
     });
+    if (req.body.courses){
+      await Course.findByIdAndUpdate(req.body.courses[0],{$addToSet: {tutors:updatedTutor.id}},{new: true});
+    }
   
     res.status(200).json({
       status: 'success',
@@ -43,5 +47,14 @@ exports.updateProfile= catchAsync(async(req, res, next)=>{
   
   });
 
+
+exports.monthlyStats= catchAsync(async(req, res, next)=>{
+    const year= req.params.year * 1  //converting string to number 
+    const plan = Tutor.aggregate([
+        {
+            $unwind: '$'
+        }
+    ])
+})
 
 

@@ -1,5 +1,6 @@
 const mongoose= require('mongoose');
 const User = require('./userModel');
+const Tutor= require('./tutorModel')
 // const Agenda= require('agenda')
 
 
@@ -62,10 +63,13 @@ const clasSchema= new mongoose.Schema({
 });
 
 clasSchema.index({ tutor: 1, student: 1}, { unique: true });
-clasSchema.index({"lastModifiedDate": 1}, {expireAfterSeconds: 5});
+clasSchema.index({"deadLine":1}, {expireAfterSeconds: 0});
 
 clasSchema.post('save', async function(){
-    await User.findByIdAndUpdate(this.students[0],{$addToSet: {tutors:this.tutor}},{new: true});
+    //parent referencing tutor on student
+    await User.findByIdAndUpdate(this.students[0],{$addToSet: {tutors:this.tutor}, role:'student'});
+    //adding booked days to tutor as soon as class is created
+    await Tutor.findByIdAndUpdate(this.tutor,{$addToSet: {bookedDays:this.scheduledTime, classes:this._id}});
 })
 
 const Class= mongoose.model('Class', clasSchema);

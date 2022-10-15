@@ -58,7 +58,8 @@ tutorSchema= new mongoose.Schema({
     },
     courses: [{
         type: mongoose.Schema.ObjectId, 
-        ref: 'Course'
+        ref: 'Course', 
+        required: [true, 'what courses are you taking']
     }],
     role: String,
     password: {
@@ -78,6 +79,10 @@ tutorSchema= new mongoose.Schema({
     bookedDays:[{
         type: Date
     }],
+    classes:[{
+        type: mongoose.Schema.ObjectId,
+        ref: 'Class'
+    }],
     passwordResetToken: {type:String, select: false},
     passwordResetExpires: {type:Date, select:false}
 },
@@ -87,11 +92,11 @@ tutorSchema= new mongoose.Schema({
   });
 
 
-tutorSchema.virtual('classes', {
-    ref: 'Class',
-    foreignField: 'tutor',
-    localField: '_id'
-});
+// tutorSchema.virtual('classes', {
+//     ref: 'Class',
+//     foreignField: 'tutor',
+//     localField: '_id'
+// });
 
 tutorSchema.virtual('students', {
     ref: 'User',
@@ -102,7 +107,7 @@ tutorSchema.virtual('students', {
 tutorSchema.pre(/^find/, function(next){
     this.populate({
         path: 'classes',
-        select: 'students course sheduledDay TimeBooked -tutor'
+        select: 'students course sheduledDay TimeBooked'
     })
     next();
 })
@@ -115,6 +120,12 @@ tutorSchema.pre('save', async function(next){
     this.password= await bcrypt.hash(this.password, 12);
 
     this.confirmPassword= undefined;
+
+    this.bookedDays.forEach(days => {
+        if(days<Date.now()){
+            days= undefined
+        }      
+    });
     next();    
 });
 
@@ -147,15 +158,14 @@ tutorSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
         .update(resetToken)
         .digest('hex');
 
-    // console.log({ resetToken }, this.passwordResetToken);
-
     this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
 
     return resetToken;
     };
-tutorSchema.post('save', async function(){
-    const cus= await Course.findByIdAndUpdate(this.courses[0],{$addToSet: {tutors:this.id}},{new: true});
-    console.log(cus)
+    
+tutorSchema.post('save' , async function(){
+    console.log('got here')
+    await Course.findByIdAndUpdate(this.courses[0],{$addToSet: {tutors:this.id}},{new: true});
 })
 
 const Tutor= mongoose.model('Tutor', tutorSchema)

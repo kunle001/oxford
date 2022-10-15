@@ -45,7 +45,6 @@ reviewSchema.pre(/^find/, function(next) {
 });
 
 reviewSchema.statics.calcAverageRatings = async function(tutorId) {
-  // console.log(tutorId)
   const stats = await this.aggregate([
     {
       $match: { tutor: tutorId }
@@ -58,7 +57,6 @@ reviewSchema.statics.calcAverageRatings = async function(tutorId) {
       }
     }
   ]);
-  // console.log(stats);
 
   if (stats.length > 0) {
     const tut= await Tutor.findByIdAndUpdate(tutorId, {
@@ -66,7 +64,6 @@ reviewSchema.statics.calcAverageRatings = async function(tutorId) {
       ratingsAverage: stats[0].avgRating
     },
     {new: true});
-    // console.log(tut)
   } else {
     await Tutor.findByIdAndUpdate(tutorId, {
       ratingsQuantity: 0,
@@ -77,13 +74,12 @@ reviewSchema.statics.calcAverageRatings = async function(tutorId) {
 
 reviewSchema.post('save', function() {
   // this points to current review
-  // console.log(this.tutor)
+
   this.constructor.calcAverageRatings(this.tutor);
 });
 
 reviewSchema.pre(/^findOneAnd/, async function(next) {
   this.r = await this.findOne();
-  console.log(this.r);
   next();
 });
 

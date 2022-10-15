@@ -6,14 +6,22 @@ const pug= require('pug')
 module.exports = class Email {
     constructor(user, url){
         this.to = user.email;
-        this.firstName= user.firstName;
+        this.name= user.name.split(' ')[0];
         this.url = url;
-        this.from = `Oluwole Olanipekun <${process.env.EMAIL_FROM}>`; 
+        this.from = `Oxford Language School <${process.env.EMAIL_FROM}>`; 
     }
 
     newTransport(){
-        if (process.env.MODE === 'production'){
-           return 1
+        console.log(!process.env.NODE_ENV)
+        if (process.env.MODE==='production') {
+            // Sendgrid
+            return nodemailer.createTransport({
+              service: 'SendGrid',
+              auth: {
+                user: process.env.SENDGRID_USERNAME,
+                pass: process.env.SENDGRID_APIKEY
+              }
+            });
         }
 
         return nodemailer.createTransport({
@@ -30,12 +38,12 @@ module.exports = class Email {
         //Define email options
         //1) Render Html based on pug template
         const html= pug.renderFile(`${__dirname}\\..\\views\\emails\\${template}.pug`, {
-            firstName: this.firstName, 
+            name: this.name, 
             url: this.url, 
             subject
         })
         const mailOptions= {
-            form: this.from,
+            from: this.from,
             to:this.to,
             subject,
             html,
@@ -46,7 +54,7 @@ module.exports = class Email {
     }
 
     async sendWelcome(){
-        await this.send('welcome', 'Welcome to mooveX lets help you find your dream apartment')
+        await this.send('welcome', 'Welcome to Oxford Language School')
     }
 
     async sendPasswordReset(){

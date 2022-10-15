@@ -61,7 +61,9 @@ const date= new Date()
 exports.signUp = async (req, res, next)=>{
     try{
         const user= await User.create(req.body);
-        const url= '127.0.0.1:3000'
+        const url = `${req.protocol}://${req.get(
+            'host'
+          )}/course`
         await new Email(user, url).sendWelcome()
         createSendToken(user, 201, req, res)
 
@@ -78,7 +80,9 @@ exports.signUp = async (req, res, next)=>{
 exports.signUpTutor = async (req, res, next)=>{
     try{
         const tutor= await Tutor.create(req.body);
-        const url= '127.0.0.1:3000'
+        const url = `${req.protocol}://${req.get(
+            'host'
+          )}/api/v1/users/course`
         await new Email(tutor, url).sendWelcome()
         createSendToken(tutor, 201, req, res)
 
@@ -207,8 +211,6 @@ exports.resetPassword= catchAsync(async (req, res, next)=>{
         })
     }
 
-
-
 });
 
 
@@ -224,7 +226,6 @@ exports.protect= catchAsync(async (req, res, next)=>{
             // check if user still exists
             const currentUser= await User.findById(decoded.id);  
             const currentTutor= await Tutor.findById(decoded.id)
-            // console.log(currentTutor)
 
             if(!currentUser && !currentTutor){
                 return (next(new AppError('Login again', 404)))
@@ -239,7 +240,6 @@ exports.protect= catchAsync(async (req, res, next)=>{
             }else if(!currentTutor.changedPasswordAfter(decoded.iat)){
                 req.user= currentTutor
                 res.locals.user= currentTutor
-                console.log(req.user)
             }else{
                 return (next(new AppError('password has been changed please login again', 400)))
             }

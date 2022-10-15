@@ -12,6 +12,6 @@ router.route('/').post(courseController.createCourse)
                  
 router.route('/:courseId').get(courseController.getOneCourse)
 
-router.route('/course-stats').get(courseController.getCourseStats)
+router.route('/agg/stats').get(courseController.getCourseStats)
 
 module.exports= router;

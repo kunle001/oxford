@@ -4,15 +4,16 @@ const Tutor= require('../Models/tutorModel')
 const AppError= require('../utils/appError')
 const catchAsync= require('../utils/catchAsync')
 const Email= require('../utils/email')
-
+const User= require('../Models/userModel')
 
 exports.createClass= catchAsync(async(req, res, next)=>{
     const course= await Course.findById(req.params.courseId);
 
+    if(!course) return next(new AppError('no course with this ID', 404))
     if (!course.tutors.includes(req.params.tutorId)){
-        return next(new AppError('no course with this Id and tutor', 404))
+        return next(new AppError('This tutor is not registerd under this course', 404))
     }
-    console.log(req.user.id)
+
     const tutorial= await Class.create({
         students: req.user.id,
         tutor: req.params.tutorId,
@@ -28,10 +29,10 @@ exports.createClass= catchAsync(async(req, res, next)=>{
 });
 
 exports.registerClass= catchAsync(async(req, res, next)=>{
-    console.log(req.user.id)
     const instance= await Class.findByIdAndUpdate(req.params.classId, {$addToSet: {students:req.user.id}},{new: true})
 
-    console.log(instance)
+    //parent referencing tutor on student
+    await User.findByIdAndUpdate(instance.students[instance.students.length-1],{$addToSet: {tutors:instance.tutor}, role:'student'});
 
     res.status(200).json({
         status: 'success',
@@ -47,5 +48,5 @@ exports.getAll= catchAsync(async(req, res, next)=>{
         status: 'success',
         data: tutorials
     })
-})
+});
 

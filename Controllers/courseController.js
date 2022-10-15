@@ -36,7 +36,7 @@ exports.getCourseStats= catchAsync(async(req, res, next)=>{
         },
         {
             $group: {
-                _id: null,
+                _id: {$toUpper: '$level'},
                 numCourse: {$sum: 1},
                 numRatings: {$sum: '$ratingsQuantity'},
                 avgRating: {$avg: '$ratingsAverage'},
@@ -45,9 +45,14 @@ exports.getCourseStats= catchAsync(async(req, res, next)=>{
                 maxPrice: {$max: '$price'}
 
             }
-        }
+        },
+        {
+            $sort: {avgPrice: 1}
+        },
+        // {
+        //     $match: {_id: {$ne: 'BEGINER'}}
+        // }
     ]);
-
     res.status(200).json({
         status: 'success',
         data: stats

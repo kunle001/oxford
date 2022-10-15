@@ -7,16 +7,14 @@ const catchAsync= require('../utils/catchAsync')
 
 exports.setTutorUserIds = (req, res, next) => {
     if (!req.body.tutor) req.body.tutor = req.params.tutorId;
-    if (!req.body.user) req.body.user = res.locals.user.id;
+    if (!req.body.user) req.body.user = req.user.id;
     next();
   };
 
 exports.Checked=catchAsync(async (req,res, next)=>{
-
-    // console.log(req.user)
     const isStudent= await User.findById(req.user.id)
-    console.log(isStudent.tutors.includes(req.params.tutorId))
-    // console.log(isStudent)
+    console.log(isStudent)
+    if(!isStudent) return next(new AppError('You are not permitted to review, you are not a student'))
     if(!isStudent.tutors.includes(req.params.tutorId)){
         return next(new AppError('you are not a student of this tutor/no tutor with this id', 404))
     }
