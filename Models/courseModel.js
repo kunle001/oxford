@@ -47,17 +47,17 @@ courseSchema.virtual('students', {
     localField: '_id'
   });
 //----
-// courseSchema.pre(/^findOne/, function(next) {
-//     this.populate({
-//       path: 'tutors',
-//       select: 'name email photo instagram twitter facebook'
-//     }).populate({
-//       path: 'students',
-//       select: '-__v -passwordChangedAt'
-//     });
+courseSchema.pre(/^findOne/, function(next) {
+    this.populate({
+      path: 'tutors',
+      select: 'name email photo'
+    }).populate({
+      path: 'students',
+      select: '-__v -passwordChangedAt'
+    });
   
-//     next();
-//   });
+    next();
+  });
 
 courseSchema.pre('save', function(next){
     this.slug = slugify(this.name, { lower: true });

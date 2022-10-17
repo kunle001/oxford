@@ -20,8 +20,14 @@ exports.createClass= catchAsync(async(req, res, next)=>{
         course: req.params.courseId,
         price: course.price
     });
+    console.log(tutorial)
 
-    
+    const user= tutorial.students[tutorial.students.length-1];
+    const url = `${req.protocol}://${req.get(
+        'host'
+      )}/class/${tutorial.id}`
+
+    await new Email(user, url).sendClass(tutorial)
     res.status(201).json({
         status: 'success',
         data: tutorial
@@ -42,7 +48,7 @@ exports.registerClass= catchAsync(async(req, res, next)=>{
 })
 
 exports.getAll= catchAsync(async(req, res, next)=>{
-    const tutorials= await Class.find().populate('students');
+    const tutorials= await Class.find();
 
     res.status(200).json({
         status: 'success',

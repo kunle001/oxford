@@ -49,13 +49,10 @@ exports.login=catchAsync(async (req, res, next)=>{
         //Logging in tutor
         createSendToken(tutor, 200, req, res)
     }else{
-        return next(new AppError('Wrong username or password', 400))
+        return next(new AppError('Wrong password', 400))
     }
 
-    // createSendToken(user, 200, req, res)
-
 }); 
-const date= new Date()
 
 
 exports.signUp = async (req, res, next)=>{

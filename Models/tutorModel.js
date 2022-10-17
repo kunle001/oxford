@@ -104,7 +104,7 @@ tutorSchema.virtual('students', {
     localField: '_id'
 })
 
-tutorSchema.pre(/^find/, function(next){
+tutorSchema.pre(/^findOne/, function(next){
     this.populate({
         path: 'classes',
         select: 'students course sheduledDay TimeBooked'
@@ -164,7 +164,6 @@ tutorSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
     };
     
 tutorSchema.post('save' , async function(){
-    console.log('got here')
     await Course.findByIdAndUpdate(this.courses[0],{$addToSet: {tutors:this.id}},{new: true});
 })
 

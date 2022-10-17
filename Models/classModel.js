@@ -42,7 +42,7 @@ const clasSchema= new mongoose.Schema({
     },
     deadLine:{
         type: Date,
-        default: dl.setMinutes(dl.getMinutes()+ 1)
+        default: date.setDate(date.getDate())
     },
     TimeBooked:{
         type: Date,
@@ -63,7 +63,22 @@ const clasSchema= new mongoose.Schema({
 });
 
 clasSchema.index({ tutor: 1, student: 1}, { unique: true });
-clasSchema.index({"deadLine":1}, {expireAfterSeconds: 0});
+clasSchema.index({"deadLine":1}, {expireAfterSeconds: 3600});
+
+clasSchema.pre(/^find/,function(next){
+    this.populate({
+        path: 'students',
+        select: 'name photo'
+    }).populate({
+        path: 'course',
+        select: 'name photo'
+    }).populate({
+        path: 'tutor',
+        select: 'name email'
+    })
+
+    next();
+})
 
 clasSchema.post('save', async function(){
     //parent referencing tutor on student

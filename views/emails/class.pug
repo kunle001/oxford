@@ -1,0 +1,30 @@
+extends mainEmail
+
+block content
+  td.container
+        .content
+          // START CENTERED WHITE CONTAINER
+          table.main(role='presentation')
+            // START MAIN CONTENT AREA
+            tr
+              td.wrapper
+                table(role='presentation' border='0' cellpadding='0' cellspacing='0')
+                  tr
+                    td
+                      p  #{name}!,
+                      p
+                        |#{message}
+                      table.btn.btn-primary(role='presentation' border='0' cellpadding='0' cellspacing='0')
+                        tbody
+                          tr
+                            td(align='left')
+                              table(role='presentation' border='0' cellpadding='0' cellspacing='0')
+                                tbody
+                                  tr
+                                    td
+                                      a(href=`${url}`) check full information about your class
+                      p
+                        | Please try to meet up with the deadline, if you cannot, kindly message the tutor
+                      p Good luck! enjoy your class, and please send your reviews
+            // END MAIN CONTENT AREA
+          // END CENTERED WHITE CONTAINER

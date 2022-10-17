@@ -57,6 +57,9 @@ userSchema.pre(/^find/, function(next){
     this.populate({
         path: 'classes',
         select: 'name'
+    }).populate({
+        path:'tutors',
+        select: 'name'
     })
     next();
 })

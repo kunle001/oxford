@@ -72,5 +72,9 @@ module.exports = class Email {
     async sendActivate(){
         await this.send('Your Account has been Activated')
     }
+    async sendClass(tutorial){
+        await this.send('class', `your class has been scheduled for ${tutorial.course.name} with ${tutorial.tutor.name} \n 
+        at ${tutorial.sheduledTime}`)
+    }
 
 }
