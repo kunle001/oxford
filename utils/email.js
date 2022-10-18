@@ -34,12 +34,13 @@ module.exports = class Email {
         });
     }
 
-    async send(template, subject){
+    async send(template, subject, message){
         //Define email options
         //1) Render Html based on pug template
         const html= pug.renderFile(`${__dirname}\\..\\views\\emails\\${template}.pug`, {
             name: this.name, 
-            url: this.url, 
+            url: this.url,
+            message, 
             subject
         })
         const mailOptions= {
@@ -73,8 +74,13 @@ module.exports = class Email {
         await this.send('Your Account has been Activated')
     }
     async sendClass(tutorial){
-        await this.send('class', `your class has been scheduled for ${tutorial.course.name} with ${tutorial.tutor.name} \n 
-        at ${tutorial.sheduledTime}`)
+        await this.send('class', `${this.name}, your class has been scheduled`, 
+        `Your class has been sheduled for ${tutorial.scheduledTime} please ${this.name}, kindly try meet up with your class \n
+        your session expires at ${tutorial.deadLine}`)
+    }
+    async sendClassUpdate(tutorial){
+        await this.send('class', `OXLS, class updated`,`Your class with ${tutorial.tutor.name.toUpperCase()} class link has been updated, 
+        follow this link ${tutorial.skypeLink || tutorial.zoomLink} to join the class on ${tutorial.scheduledTime} follow for the scheduled time`)
     }
 
 }
