@@ -58,13 +58,11 @@ const clasSchema= new mongoose.Schema({
     },
     zoomLink:{
         type: String,
-        default: 'not yet updated',
         unique: true,
         trim: true
     },
     skypeLink:{
         type: String,
-        default: 'not yet updated',
         unique:true,
         trim: true
     }

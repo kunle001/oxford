@@ -7,6 +7,12 @@ const userController= require('../Controllers/userController')
 const router= express.Router();
 router.use('/:tutorId/reviews', reviewRouter)
 
+router.route('/apply').post(tutorController.applyTutor)
+router.route('/applications').get(
+    authController.protect,
+    authController.RestrictTo('admin'),
+    tutorController.getApplications)
+
 router.route('/signup').post(authController.signUpTutor);
 router.route('/:tutorId').get(tutorController.findOneTutor)
 

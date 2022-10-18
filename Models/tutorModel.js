@@ -21,18 +21,6 @@ tutorSchema= new mongoose.Schema({
         type: String,
         default: 'default.jpg'
       },
-    instagram:{
-        type: String, 
-        required: [true, 'provide your instagram']
-    }, 
-    twitter:{
-        type: String, 
-        required: [true, 'provide your twitter']
-    }, 
-    facebook: {
-        type: String, 
-        required: [true, 'provide your facbook account']
-    }, 
     language: [{
         type: String, 
         required: [true, 'what language do you tutor']

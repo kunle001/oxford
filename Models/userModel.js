@@ -42,6 +42,7 @@ userSchema= new mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: 'Tutor'
     }],
+    token:String,
     passwordResetToken: {type:String, select: false},
     passwordResetExpires: {type:Date, select:false}
 });

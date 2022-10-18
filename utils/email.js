@@ -82,5 +82,8 @@ module.exports = class Email {
         await this.send('class', `OXLS, class updated`,`Your class with ${tutorial.tutor.name.toUpperCase()} class link has been updated, 
         follow this link ${tutorial.skypeLink || tutorial.zoomLink} to join the class on ${tutorial.scheduledTime} follow for the scheduled time`)
     }
+    async sendApplication(){
+        await this.send('application', 'Application as Teacher')
+    }
 
 }
