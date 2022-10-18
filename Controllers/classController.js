@@ -20,9 +20,8 @@ exports.createClass= catchAsync(async(req, res, next)=>{
         course: req.params.courseId,
         price: course.price
     });
-    console.log(tutorial)
 
-    const user= tutorial.students[tutorial.students.length-1];
+    const user= req.user;
     const url = `${req.protocol}://${req.get(
         'host'
       )}/class/${tutorial.id}`
@@ -34,11 +33,39 @@ exports.createClass= catchAsync(async(req, res, next)=>{
     })
 });
 
+exports.updateClass= catchAsync(async(req, res, next)=>{
+    const instance= await Class.findOneAndUpdate({
+        id: req.params.classId,
+        tutor: req.user.id
+    }, req.body, {new: true, runValidators:true})
+
+    if(!instance) return next(new AppError('wrong course Id, or you are not authorized to perform this action',404));
+    const url=`${req.protocol}://${req.get(
+        'host'
+      )}/class/${instance.id}`
+
+    instance.students.forEach(async student => {
+        await new Email(student, url).sendClassUpdate(instance)
+    });
+
+    res.status(200).json({
+        status: 'success',
+        data: instance
+    })
+})
+
 exports.registerClass= catchAsync(async(req, res, next)=>{
     const instance= await Class.findByIdAndUpdate(req.params.classId, {$addToSet: {students:req.user.id}},{new: true})
 
     //parent referencing tutor on student
-    await User.findByIdAndUpdate(instance.students[instance.students.length-1],{$addToSet: {tutors:instance.tutor}, role:'student'});
+    const tutorial= await User.findByIdAndUpdate(instance.students[instance.students.length-1],{$addToSet: {tutors:instance.tutor}, role:'student'});
+
+    const user= req.user;
+    const url = `${req.protocol}://${req.get(
+        'host'
+      )}/class/${tutorial.id}`
+
+    await new Email(user, url).sendClass(tutorial)
 
     res.status(200).json({
         status: 'success',

@@ -42,7 +42,7 @@ const clasSchema= new mongoose.Schema({
     },
     deadLine:{
         type: Date,
-        default: date.setDate(date.getDate())
+        default: date.setDate(date.getDate()+5)
     },
     TimeBooked:{
         type: Date,
@@ -56,9 +56,17 @@ const clasSchema= new mongoose.Schema({
         type: Boolean, 
         default: false
     },
-    classLink:{
+    zoomLink:{
         type: String,
-        default: 'not yet updated'
+        default: 'not yet updated',
+        unique: true,
+        trim: true
+    },
+    skypeLink:{
+        type: String,
+        default: 'not yet updated',
+        unique:true,
+        trim: true
     }
 });
 
@@ -68,10 +76,10 @@ clasSchema.index({"deadLine":1}, {expireAfterSeconds: 3600});
 clasSchema.pre(/^find/,function(next){
     this.populate({
         path: 'students',
-        select: 'name photo'
+        select: 'name photo email'
     }).populate({
         path: 'course',
-        select: 'name photo'
+        select: 'name photo email'
     }).populate({
         path: 'tutor',
         select: 'name email'
