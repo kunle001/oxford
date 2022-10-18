@@ -53,7 +53,7 @@ userSchema.virtual('classes', {
 });
 
 
-userSchema.pre(/^find/, function(next){
+userSchema.pre(/^findOne/, function(next){
     this.populate({
         path: 'classes',
         select: 'name'
