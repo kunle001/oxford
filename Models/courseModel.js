@@ -47,7 +47,7 @@ courseSchema.virtual('students', {
     localField: '_id'
   });
 //----
-courseSchema.pre(/^findOne/, function(next) {
+courseSchema.pre(/^findOneAnd/, function(next) {
     this.populate({
       path: 'tutors',
       select: 'name email photo'
