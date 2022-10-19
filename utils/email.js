@@ -83,7 +83,11 @@ module.exports = class Email {
         follow this link ${tutorial.skypeLink || tutorial.zoomLink} to join the class on ${tutorial.scheduledTime} follow for the scheduled time`)
     }
     async sendApplication(){
-        await this.send('application', 'Application as Teacher')
+        await this.send('application', 'Application as Teacher', 'There has been an Application on OXLS for the role of a Teacher')
+    }
+    async sendApproval(){
+        await this.send('application', 'Approved Application', `Congratulations ${this.name}!!, your application has been approved, \n
+        please kindly follow this link this link Expires in 24 hours`)
     }
 
 }

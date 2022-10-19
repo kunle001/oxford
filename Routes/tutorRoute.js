@@ -8,13 +8,12 @@ const router= express.Router();
 router.use('/:tutorId/reviews', reviewRouter)
 
 router.route('/apply').post(tutorController.applyTutor)
-router.route('/applications').get(
-    authController.protect,
-    authController.RestrictTo('admin'),
-    tutorController.getApplications)
 
-router.route('/signup').post(authController.signUpTutor);
+
+
+router.route('/signup/:approvalToken').post(tutorController.checkValidToken,authController.signUpTutor);
 router.route('/:tutorId').get(tutorController.findOneTutor)
+
 
 router.route('/update-me').patch(
     authController.protect,
@@ -22,6 +21,9 @@ router.route('/update-me').patch(
     userController.resizeUserPhoto,
     tutorController.updateProfile)
 
+router.use( authController.protect,authController.RestrictTo('admin'))
 
+router.route('/applications').get(tutorController.getApplications)
+router.route('/applications/approve/:applicationId').get(tutorController.approveApplication)
 
 module.exports= router; 

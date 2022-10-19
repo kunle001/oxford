@@ -42,9 +42,12 @@ userSchema= new mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: 'Tutor'
     }],
-    token:String,
+    // approvalToken:[{
+    //     type:String
+    // }],
     passwordResetToken: {type:String, select: false},
-    passwordResetExpires: {type:Date, select:false}
+    passwordResetExpires: {type:Date, select:false},
+    // approvalTokenExpires: {type:Date, select:false}
 });
 
 userSchema.virtual('classes', {
@@ -82,6 +85,8 @@ userSchema.methods.correctPassword =  async function(
     return await bcrypt.compare(candidatePassword, userPassword);
   };
   
+
+
 userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
     if (this.passwordChangedAt) {
         const changedTimestamp = parseInt(
@@ -96,7 +101,7 @@ userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
     return false;
     };
 
-    userSchema.methods.createPasswordResetToken = function() {
+userSchema.methods.createPasswordResetToken = function() {
     const resetToken = crypto.randomBytes(32).toString('hex');
 
     this.passwordResetToken = crypto
@@ -108,6 +113,15 @@ userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
 
     return resetToken;
     };
+
+// userSchema.methods.applicationApprovalToken= function(){
+//     const approvalToken= crypto.randomBytes(32).toString('hex');
+
+//     this.approvalToken= crypto.createHash('sha256').update(approvalToken).digest('hex')
+//     this.approvalTokenExpires= Date.now() + 1440*60*1000;
+
+//     return approvalToken
+// }
 
 const User= mongoose.model('User', userSchema)
 
