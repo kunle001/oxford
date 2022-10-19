@@ -89,5 +89,9 @@ module.exports = class Email {
         await this.send('application', 'Approved Application', `Congratulations ${this.name}!!, your application has been approved, \n
         please kindly follow this link this link Expires in 24 hours`)
     }
+    async sendDisapproval(){
+        await this.send('disapproval', 'OXLS', `Sorry ${this.name}, we regret to inform you that your application \n
+        as a techer on our platform has been disapproved, your application wasn't convincing enough, you can re-apply`)
+    }
 
 }

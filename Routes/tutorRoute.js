@@ -25,5 +25,6 @@ router.use( authController.protect,authController.RestrictTo('admin'))
 
 router.route('/applications').get(tutorController.getApplications)
 router.route('/applications/approve/:applicationId').get(tutorController.approveApplication)
+router.route('/applications/disapprove/:applicationId').get(tutorController.disapproveApplication)
 
 module.exports= router; 

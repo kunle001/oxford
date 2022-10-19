@@ -66,6 +66,8 @@ exports.approveApplication= catchAsync(async(req, res, next)=>{
       await application.save({validateBeforeSave:false});
       console.log(err)
     }
+  }else{
+    return next(new AppError('this application does not exist on the database', 404))
   }
 
   res.status(200).json({
@@ -73,6 +75,19 @@ exports.approveApplication= catchAsync(async(req, res, next)=>{
     message: 'Congratulations Your Application is successful',
     data: application
   })
+});
+
+exports.disapproveApplication= catchAsync(async(req, res, next)=>{
+  const application= await Application.findByIdAndUpdate(req.params.applicationId, 
+    {status: 'disapproved'}, {new: true, runValidators:true});
+      const url= 'Thanks'
+
+      await new Email(application,url).sendDisapproval()
+
+      res.status(200).json({
+        status: 'success',
+        data: application
+      })
 })
 
 

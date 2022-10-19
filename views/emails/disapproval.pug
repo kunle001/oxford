@@ -1,0 +1,19 @@
+extends mainEmail
+
+block content
+  td.container
+        .content
+          // START CENTERED WHITE CONTAINER
+          table.main(role='presentation')
+            // START MAIN CONTENT AREA
+            tr
+              td.wrapper
+                table(role='presentation' border='0' cellpadding='0' cellspacing='0')
+                  tr
+                    td
+                      p Hi,
+                      p
+                        |#{message}
+                      p
+                        | Kindly Try Later
+                      p Thanks For Applying! all Love from Oxford Language School
