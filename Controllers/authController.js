@@ -4,7 +4,10 @@ const User= require('../Models/userModel')
 const Email= require('../utils/email');
 const AppError = require('../utils/appError');
 const crypto= require('crypto')
-const Tutor= require('../Models/tutorModel')
+const Tutor= require('../Models/tutorModel');
+const passport = require('passport')
+const facebookStrategy= require('passport-facebook').Strategy
+
 
 
 const signToken= id=>{
@@ -54,6 +57,56 @@ exports.login=catchAsync(async (req, res, next)=>{
 
 }); 
 
+exports.sigupFacebook= catchAsync(async(req, res, next)=>{
+
+    passport.use(new facebookStrategy({
+        clientID: "1153882575565229",
+        clientSecret: "eb0d0c3f7f8db3d89fe28f7a58455979",
+        callbackURL: "http://127.0.0.1:5000/api/v1/course",
+        profileFields: ['id', 'displayName', 'name', 'gender',"picture.type(large)", "email" ]
+    },//facebook will send back the token and profile 
+    async function(token, refreshToken, profile, done){
+        console.log(profile)
+            const data= {
+                id: profile.id,
+                token,
+                name: profile.name.givenName+' '+profile.name.familyName,
+                email: profile.emails[0].value,
+                gender:profile.gender,
+                photo: profile.photos[0].value
+            }
+            const user= await User.create(data)
+            console.log(user)
+
+            if(err){
+             console.log(err) 
+             throw err;
+            }    
+            console.log(user)
+            return done(null,  user)
+
+    }));
+
+
+    passport.serializeUser(function(user, done){
+        done(null, user.id)
+    })
+    
+    passport.deserializeUser(async function(id, done){
+
+        await User.findById(id, function(err,user){
+            done(err,user)
+        })
+    });
+
+    console.log(passport)
+    passport.authenticate('facebook',{scope:'email'})
+
+    res.status(201).json({
+        data: passport
+    })
+
+})
 
 exports.signUp = async (req, res, next)=>{
     try{

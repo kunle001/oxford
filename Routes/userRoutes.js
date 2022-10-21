@@ -1,8 +1,17 @@
 const express= require('express')
 const userController= require('../Controllers/userController')
 const authController= require('../Controllers/authController')
+const passport = require('passport')
 
 const router= express.Router()
+
+
+router.route('/signup-facebook').get(authController.sigupFacebook)
+router.route('/facebook/callback', passport.authenticate('facebook',{
+    successRedirect: '/my-profile',
+    failureRedirect: '/signup'
+}))
+
 
 router.route('/signup').post(authController.signUp)
 router.route('/login').post(authController.login)
