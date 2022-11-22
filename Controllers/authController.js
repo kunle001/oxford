@@ -60,8 +60,8 @@ exports.login=catchAsync(async (req, res, next)=>{
 exports.sigupFacebook= catchAsync(async(req, res, next)=>{
 
     passport.use(new facebookStrategy({
-        clientID: process.env.FACEBOOKCLIENTID,
-        clientSecret: process.env.FACEBOOKCLIENTSECRET,
+        clientID: "1153882575565229",
+        clientSecret: "eb0d0c3f7f8db3d89fe28f7a58455979",
         callbackURL: "http://127.0.0.1:5000/api/v1/course",
         profileFields: ['id', 'displayName', 'name', 'gender',"picture.type(large)", "email" ]
     },//facebook will send back the token and profile 
