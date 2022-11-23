@@ -29,8 +29,6 @@ app.use((req, res, next)=>{
 });
 app.use(bodyParser.json());
 //SETTING UP PUG
-app.use(express.static(path.join(__dirname, 'public')));
-
 
 app.engine('pug', require('pug').__express)
 app.set('view engine', 'pug');
