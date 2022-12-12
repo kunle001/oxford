@@ -2,7 +2,7 @@ const AppError = require("../utils/appError");
 
 // FUNCTION FOR HANDLING TOKEN AND MONGOOSE ERRORS
 const handleDuplicateErrorDB= (error)=>{
-    const message= `${error.keyValue.name} is taken already, please try another name` 
+    const message= ` ${error.keyValue.email} is taken already, please try another ${Object.keys(error.keyValue)}` 
     return new AppError(message, 400)  
 };
 
@@ -66,7 +66,7 @@ module.exports=(err, req, res, next)=>{
     
     if(process.env.MODE==='development'){
         sendErrorDev(err, res)
-    }else if (process.env.NODE_ENV==='production'){
+    }else if (process.env.MODE==='production'){
         
         if(err.code=== 11000){
             error= handleDuplicateErrorDB(err)
@@ -80,8 +80,7 @@ module.exports=(err, req, res, next)=>{
             error= handleTokenExpired(err)
         }else{
             error=new AppError('something went wrong', 400)
-        }
-
+        };
         sendProdErr(error, res)
     }
 }

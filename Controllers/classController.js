@@ -57,8 +57,10 @@ exports.updateClass= catchAsync(async(req, res, next)=>{
 exports.registerClass= catchAsync(async(req, res, next)=>{
     const instance= await Class.findByIdAndUpdate(req.params.classId, {$addToSet: {students:req.user.id}},{new: true})
 
+    if(!instance) return next(new AppError('this class is expired',404))
     //parent referencing tutor on student
-    const tutorial= await User.findByIdAndUpdate(instance.students[instance.students.length-1],{$addToSet: {tutors:instance.tutor}, role:'student'});
+    const tutorial= await User.findByIdAndUpdate(instance.students[instance.students.length-1],
+        {$addToSet: {tutors:instance.tutor}, role:'student'});
 
     const user= req.user;
     const url = `${req.protocol}://${req.get(

@@ -5,8 +5,8 @@ const reviewRouter= require('../Routes/reviewRoute')
 const userController= require('../Controllers/userController')
 
 const router= express.Router();
-router.use('/:tutorId/reviews', reviewRouter)
 
+router.use('/:tutorId/reviews', reviewRouter)
 router.route('/apply').post(tutorController.applyTutor)
 
 
