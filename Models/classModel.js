@@ -65,6 +65,10 @@ const clasSchema= new mongoose.Schema({
         type: String,
         unique:true,
         trim: true
+    },
+    createdAt:{
+        type: Date,
+        default: Date.now()
     }
 });
 

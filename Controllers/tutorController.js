@@ -6,6 +6,7 @@ const User= require('../Models/userModel')
 const Email= require('../utils/email')
 const AppError = require('../utils/appError')
 const crypto= require('crypto')
+const Class = require('../Models/classModel')
 
 exports.findOneTutor= catchAsync(async(req, res, next)=>{
     const tutor= await Tutor.findById(req.params.tutorId)
@@ -128,13 +129,16 @@ exports.updateProfile= catchAsync(async(req, res, next)=>{
   });
 
 
-exports.monthlyStats= catchAsync(async(req, res, next)=>{
-    const year= req.params.year * 1  //converting string to number 
-    const plan = Tutor.aggregate([
-        {
-            $unwind: '$'
-        }
-    ])
-})
+// exports.monthlyStats= catchAsync(async(req, res, next)=>{
+//     const year= req.params.year * 1  //converting string to number 
+//     const plan = Class.aggregate([
+//         {
+//             $unwind: '$'
+//         },
+//         {
+//           $match: {'$'}
+//         }
+//     ])
+// });
 
 
