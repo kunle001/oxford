@@ -129,16 +129,4 @@ exports.updateProfile= catchAsync(async(req, res, next)=>{
   });
 
 
-// exports.monthlyStats= catchAsync(async(req, res, next)=>{
-//     const year= req.params.year * 1  //converting string to number 
-//     const plan = Class.aggregate([
-//         {
-//             $unwind: '$'
-//         },
-//         {
-//           $match: {'$'}
-//         }
-//     ])
-// });
-
 
