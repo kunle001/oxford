@@ -27,6 +27,6 @@ router.route('/my-profile').get(authController.protect, userController.profile)
 
 // router.route('/resetPassword/:token').post(authController.resetPassword);
 
-router.route('/').get(userController.getAllUsers)
+router.route('/').get(authController.protect,authController.RestrictTo('admin'),userController.getAllUsers)
 
 module.exports= router
