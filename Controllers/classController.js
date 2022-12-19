@@ -85,3 +85,27 @@ exports.getAll= catchAsync(async(req, res, next)=>{
     })
 });
 
+exports.monthlyStats= catchAsync(async(req, res, next)=>{
+    const year= req.params.year * 1  //converting string to number 
+    const plan =await Class.aggregate([
+      {
+        $match:{
+            createdAt:{
+                $gte: new Date((new Date())
+                .setDate(new Date().getDate() - 1)),
+
+                $lt: new Date()
+            }
+        },
+        $group: {
+          _id: null,
+          totalSum: {$sum:"$price"}
+        }
+      }
+    ]);
+
+    res.status(200).json({
+      status: 'success',
+      message: plan
+    })
+});
