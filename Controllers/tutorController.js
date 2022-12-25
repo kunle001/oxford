@@ -6,7 +6,41 @@ const User= require('../Models/userModel')
 const Email= require('../utils/email')
 const AppError = require('../utils/appError')
 const crypto= require('crypto')
-const Class = require('../Models/classModel')
+const Class = require('../Models/classModel');
+const multer= require('multer');
+const sharp= require('sharp')
+
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new AppError('Not an image! Please upload only images.', 400), false);
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter
+});
+
+exports.uploadCV = upload.single('CV');
+
+exports.resizeCV = catchAsync(async (req, res, next) => {
+  if (!req.file) return next();
+
+  req.file.filename = `application-${req.user.id}-${Date.now()}.jpeg`;
+
+  await sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/applications/${req.file.filename}`);
+
+  next();
+});
+
 
 exports.findOneTutor= catchAsync(async(req, res, next)=>{
     const tutor= await Tutor.findById(req.params.tutorId)
@@ -18,6 +52,9 @@ exports.findOneTutor= catchAsync(async(req, res, next)=>{
 });
 
 exports.applyTutor= catchAsync(async(req, res, next)=>{
+  if(!req.file) return next(new AppError('provide your CV', 400))
+  req.body.user= req.user.id;
+  req.body.CV= req.file.filename
   const application= await Application.create(req.body)
 
   const staffs= await User.find({role:'admin'})

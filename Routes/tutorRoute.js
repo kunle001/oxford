@@ -7,7 +7,10 @@ const userController= require('../Controllers/userController')
 const router= express.Router();
 
 router.use('/:tutorId/reviews', reviewRouter)
-router.route('/apply').post(tutorController.applyTutor)
+router.route('/apply').post(authController.protect,
+    tutorController.uploadCV,
+    tutorController.resizeCV,
+    tutorController.applyTutor)
 
 
 

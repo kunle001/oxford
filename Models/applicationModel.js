@@ -3,19 +3,11 @@ const validator= require('validator')
 const crypto= require('crypto')
 
 const applicationSchema= new mongoose.Schema({
-    name: {
-        type: String,
-        required: [true, 'please provide a name'],
-        trim: true
+    user:{
+        type: mongoose.Schema.ObjectId,
+        ref: 'User'
     },
-    email: {
-        type: String,
-        required: [true, 'Please provide your email'],
-        unique: true,
-        lowercase: true,
-        validate: [validator.isEmail, 'Please provide a valid email']
-      },
-    certificates:{
+    CV:{
         type: String, 
         required: true,
     },
@@ -33,12 +25,23 @@ const applicationSchema= new mongoose.Schema({
         enum: ['pending', 'approved', 'disapproved'],
         default: 'pending'
     },
+    createdAt: {
+        type: Date,
+        default: Date.now()
+    },
     approvalToken:{
         type:String
     },
     approvalTokenExpires: {type:Date, select:false}
 });
 
+
+applicationSchema.pre(/^find/,function(next){
+    this.populate({
+        path:'user',
+        select: 'name email photo'
+    })
+})
 
 applicationSchema.methods.createApprovalToken= function(){
     const approvalToken= crypto.randomBytes(32).toString('hex');
