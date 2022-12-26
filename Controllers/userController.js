@@ -89,4 +89,32 @@ exports.profile= catchAsync(async(req, res, next)=>{
   })
 });
 
+const wayforpay= require('wayforpay')
+
+exports.buyCredit= catchAsync(async()=>{
+  const clientDetails= req.users.name.split(' ')
+
+  const client= new wayforpay({
+    merchantAccount: '',
+    merchantDomainName: '',
+    merchantSecretKey: ''
+  });
+
+  const paymentButton= client.createPaymentButton({
+    orderReference: '',
+    orderDate: new Date().toISOString(),
+    amount: req.params.price,
+    currency: 'USD',
+    productName: 'Course Credits',
+    productPrice: req.params.price,
+    productCount: '1',
+    clientFirstName: clientDetails[0],
+    clientLastName: clientDetails[1],
+    clientPhone: req.user.phone,
+    returnUrl: `${reeq.protocol}://${req.get('host')}/`,
+    serviceUrl: ''
+  });
+
+})
+
 
