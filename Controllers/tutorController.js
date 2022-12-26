@@ -74,10 +74,8 @@ exports.applyTutor= catchAsync(async(req, res, next)=>{
 });
 
 exports.getApplications= catchAsync(async(req, res, next)=>{
-  const applications= await Application.find()
 
-
-  if(!applications) return next(new AppError('something went wrong', 400))
+  const applications= await Application.find();
 
   res.status(200).json({
     status: 'success',
