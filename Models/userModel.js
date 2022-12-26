@@ -7,6 +7,14 @@ userSchema= new mongoose.Schema({
         type: String, 
         required: true
     }, 
+    credits:{
+        type: Number,
+        default: 0
+    },
+    phone:{
+        type: Number,
+        required:[true, 'provide a phone number']
+    },
     nationality: String,
     email:{
         type: String, 
