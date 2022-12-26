@@ -1,5 +1,4 @@
 const mongoose= require('mongoose')
-const validator= require('validator')
 const crypto= require('crypto')
 
 const applicationSchema= new mongoose.Schema({
@@ -40,7 +39,8 @@ applicationSchema.pre(/^find/,function(next){
     this.populate({
         path:'user',
         select: 'name email photo'
-    })
+    });
+    next()
 })
 
 applicationSchema.methods.createApprovalToken= function(){
