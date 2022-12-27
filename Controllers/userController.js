@@ -91,16 +91,16 @@ exports.profile= catchAsync(async(req, res, next)=>{
 
 const wayforpay= require('wayforpay')
 
-exports.buyCredit= catchAsync(async()=>{
-  const clientDetails= req.users.name.split(' ')
+exports.buyCredit= catchAsync(async(req,res,next)=>{
+  const clientDetails= req.user.name.split(' ')
 
-  const client= new wayforpay({
-    merchantAccount: '',
-    merchantDomainName: '',
-    merchantSecretKey: ''
+  const client= await new wayforpay({
+    // merchantAccount: '',
+    merchantDomainName: 'http://seunoxford.com',
+    merchantSecretKey: '8d7f980347bb25365e8c7f5b9f4b78c61eeb013c'
   });
 
-  const paymentButton= client.createPaymentButton({
+  const paymentButton= await client.createPaymentButton({
     orderReference: '',
     orderDate: new Date().toISOString(),
     amount: req.params.price,
@@ -111,9 +111,14 @@ exports.buyCredit= catchAsync(async()=>{
     clientFirstName: clientDetails[0],
     clientLastName: clientDetails[1],
     clientPhone: req.user.phone,
-    returnUrl: `${reeq.protocol}://${req.get('host')}/`,
+    returnUrl: `${req.protocol}://${req.get('host')}/`,
     serviceUrl: ''
   });
+
+  res.status(200).json({
+    status: 'success',
+    data: paymentButton
+  })
 
 })
 

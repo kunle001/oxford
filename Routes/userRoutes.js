@@ -28,5 +28,5 @@ router.route('/my-profile').get(authController.protect, userController.profile)
 // router.route('/resetPassword/:token').post(authController.resetPassword);
 
 router.route('/').get(authController.protect,authController.RestrictTo('admin'),userController.getAllUsers)
-
+router.route('/checkout/:price').get(authController.protect, userController.buyCredit)
 module.exports= router
