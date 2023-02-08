@@ -21,6 +21,7 @@ tutorSchema= new mongoose.Schema({
         type: String,
         default: 'default.jpg'
       },
+    images:[String],
     language: [{
         type: String, 
         required: [true, 'what language do you tutor']
