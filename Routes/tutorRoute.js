@@ -12,11 +12,8 @@ router.route('/apply').post(authController.protect,
     tutorController.resizeCV,
     tutorController.applyTutor)
 
-
-
 router.route('/signup/:approvalToken').post(tutorController.checkValidToken,authController.signUpTutor);
 router.route('/:tutorId').get(tutorController.findOneTutor)
-
 
 router.route('/update-me').patch(
     authController.protect,
